@@ -1,0 +1,32 @@
+apply plugin: 'idea'
+apply from: project(':gradleinclude').projectDir.path + '/shadow.gradle'
+apply from: project(':gradleinclude').projectDir.path + '/kotlin.gradle'
+apply from: project(':gradleinclude').projectDir.path + '/proto.gradle'
+
+buildscript {
+    // Serves as a global variable
+    ext.kotlin_version = '1.2.0'
+    ext.jackson_version = '2.9.8'
+    // Defines where we get our dependencies
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // Retrieves the Kotlin gradle plugin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile 'org.yaml:snakeyaml:1.21'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.wtanaka.ciconfiggen.CiConfigGenKt'
+    }
+}

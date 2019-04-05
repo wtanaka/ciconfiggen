@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_package = "com.wtanaka.ciconfiggen";
+option java_outer_classname = "ConfigProto";
+
+message Configuration {
+    message EnvironmentVariableAxis {
+        string name = 1;
+        repeated string value = 2;
+    }
+
+    repeated EnvironmentVariableAxis envAxis = 1;
+}

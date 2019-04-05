@@ -1,0 +1,10 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+    }
+}
+
+apply plugin: com.github.jengelman.gradle.plugins.shadow.ShadowPlugin
