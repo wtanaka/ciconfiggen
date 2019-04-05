@@ -1,0 +1,8 @@
+*~
+/ciconfiggen.iml
+/gradle
+/.gradle
+/gradlew
+/gradlew.bat
+/.idea
+/out/

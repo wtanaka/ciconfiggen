@@ -1,0 +1,33 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.8"
+    }
+}
+
+apply plugin: com.google.protobuf.gradle.ProtobufPlugin
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:+'
+    }
+}
+
+dependencies {
+    compile 'com.google.protobuf:protobuf-java:3.7.1'
+}
+
+clean {
+    delete protobuf.generatedFilesBaseDir
+}
+
+if (respondsTo("idea")) {
+    idea {
+        module {
+            sourceDirs += file("${protobuf.generatedFilesBaseDir}/main/java");
+        }
+    }
+}
