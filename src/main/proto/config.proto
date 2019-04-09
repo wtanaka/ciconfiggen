@@ -4,10 +4,39 @@ option java_package = "com.wtanaka.ciconfiggen";
 option java_outer_classname = "ConfigProto";
 
 message Configuration {
+    enum CiService {
+        ALL = 0;
+        TRAVIS = 1;
+        CIRCLECI = 2;
+    }
+
     message EnvironmentVariableAxis {
         string name = 1;
         repeated string value = 2;
     }
 
+    message EnvironmentNameValuePair {
+        string name = 1;
+        string value = 2;
+    }
+
+    message Environment {
+        repeated EnvironmentNameValuePair pair = 1;
+    }
+
+    // An instance of this message represents the desire to suppress a
+    // certain subset of environment variable permutations from the matrix.
+    // The terms in "suppressed" are AND-ed together, e.g. if there are two
+    // terms in suppressed like ANSIBLE_VERSIONS=1.4.4 and
+    // DOCKER_IMAGES=centos:6 then only permutations with those two values
+    // get suppressed.  Whereas if only ANSIBLE_VERSIONS=1.6.1, then all
+    // permutations with that set are suppressed.
+    message Suppression {
+        repeated EnvironmentNameValuePair env = 1;
+        CiService service = 2;
+    }
+
     repeated EnvironmentVariableAxis envAxis = 1;
+
+    repeated Suppression suppress = 2;
 }
