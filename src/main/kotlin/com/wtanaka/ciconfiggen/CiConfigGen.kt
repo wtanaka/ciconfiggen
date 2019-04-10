@@ -2,6 +2,9 @@ package com.wtanaka.ciconfiggen
 
 import com.google.protobuf.TextFormat
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration
+import com.wtanaka.ciconfiggen.ConfigProto.Configuration.CiService
+import com.wtanaka.ciconfiggen.ConfigProto.Configuration.CiService.CIRCLECI
+import com.wtanaka.ciconfiggen.ConfigProto.Configuration.CiService.TRAVIS
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.Environment
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.EnvironmentNameValuePair
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.EnvironmentVariableAxis
@@ -69,22 +72,26 @@ fun envMatrix(
     }
 }
 
-fun envMatrix(config: Configuration): Sequence<Environment> = config
+fun envMatrix(
+    config: Configuration, service: CiService
+): Sequence<Environment> = config
     .envAxisList
     .asSequence()
     .filterNotNull()
     .let { envMatrixTyped(it) }
     .let { sequenceOfEnv ->
-        config.suppressList.fold(sequenceOfEnv) { envSeq, suppression ->
-            envSeq.suppress(suppression)
-        }
+        config.suppressList
+            .filter { service == it.service }
+            .fold(sequenceOfEnv) { envSeq, suppression ->
+                envSeq.suppress(suppression)
+            }
     }
 
 fun travisConfig(config: Configuration): Map<String, Any> {
     return mapOf(
         "language" to "ruby",
         "rvm" to listOf("1.9.3"),
-        "env" to envMatrix(config).map { it.shellString() }.toList(),
+        "env" to envMatrix(config, TRAVIS).map { it.shellString() }.toList(),
         "services" to "docker",
         "script" to "wget -O- bit.ly/ansibletest | sh -x",
         "after_failure" to listOf(
@@ -109,7 +116,7 @@ fun travisYaml(): Yaml {
 fun circleConfig(config: Configuration): Map<String, Any> {
     return mapOf(
         "version" to 2,
-        "jobs" to envMatrix(config).map { it.shellString() }.map {
+        "jobs" to envMatrix(config, CIRCLECI).map { it.shellString() }.map {
             it to mapOf(
                 "machine" to true,
                 "steps" to listOf(
@@ -129,7 +136,8 @@ fun circleConfig(config: Configuration): Map<String, Any> {
         "workflows" to mapOf(
             "version" to 2,
             "test" to mapOf(
-                "jobs" to envMatrix(config).map { it.shellString() }.toList()
+                "jobs" to envMatrix(config, CIRCLECI).map { it.shellString() }
+                    .toList()
             )
         )
     )
