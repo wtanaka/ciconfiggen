@@ -3,16 +3,10 @@ package com.wtanaka.ciconfiggen
 import com.google.protobuf.TextFormat
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.CiService
-import com.wtanaka.ciconfiggen.ConfigProto.Configuration.CiService.CIRCLECI
-import com.wtanaka.ciconfiggen.ConfigProto.Configuration.CiService.TRAVIS
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.Environment
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.EnvironmentNameValuePair
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.EnvironmentVariableAxis
 import com.wtanaka.ciconfiggen.ConfigProto.Configuration.Suppression
-import org.yaml.snakeyaml.DumperOptions
-import org.yaml.snakeyaml.DumperOptions.FlowStyle.BLOCK
-import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.representer.Representer
 import java.io.File
 
 fun envMatrixTyped(
@@ -87,62 +81,6 @@ fun envMatrix(
             }
     }
 
-fun travisConfig(config: Configuration): Map<String, Any> {
-    return mapOf(
-        "language" to "ruby",
-        "rvm" to listOf("1.9.3"),
-        "env" to envMatrix(config, TRAVIS).map { it.shellString() }.toList(),
-        "services" to "docker",
-        "script" to "wget -O- bit.ly/ansibletest | sh -x",
-        "after_failure" to listOf(
-            "cat role-tester-ansible-master/.kitchen.yml",
-            "cat role-tester-ansible-master/.kitchen.local.yml",
-            "cat role-tester-ansible-master/.kitchen/logs/*.log | grep -v '^I, '"
-        ),
-        "notifications" to mapOf(
-            "webhooks" to "https://galaxy.ansible.com/api/v1/notifications/"
-        )
-    )
-}
-
-fun travisYaml(): Yaml {
-    val repr = Representer()
-    repr.propertyUtils = TravisPropertyUtils()
-    val dumperOptions = DumperOptions()
-    dumperOptions.defaultFlowStyle = BLOCK
-    return Yaml(repr, dumperOptions)
-}
-
-fun circleConfig(config: Configuration): Map<String, Any> {
-    return mapOf(
-        "version" to 2,
-        "jobs" to envMatrix(config, CIRCLECI).map { it.shellString() }.map {
-            it to mapOf(
-                "machine" to true,
-                "steps" to listOf(
-                    "checkout",
-                    mapOf("run" to "sudo apt-get update -qq"),
-                    mapOf(
-                        "run" to "sudo apt-get install -y wget make ruby-bundler python-virtualenv"),
-                    // Needed to upgrade requests[security] on Ubuntu 14.04
-                    mapOf(
-                        "run" to "sudo apt-get install -y python-dev libffi-dev libssl-dev"),
-//            -      # Not needed for machine executor
-//            -      #- setup_remote_docker
-                    mapOf("run" to "sudo apt-get install -y docker.io"),
-                    mapOf("run" to "wget -qO- bit.ly/ansibletest | env $it sh")
-                ))
-        }.toMap(),
-        "workflows" to mapOf(
-            "version" to 2,
-            "test" to mapOf(
-                "jobs" to envMatrix(config, CIRCLECI).map { it.shellString() }
-                    .toList()
-            )
-        )
-    )
-}
-
 fun main(args: Array<String>) {
     val config = File(".ciconfiggen.config")
         .inputStream().reader(Charsets.UTF_8).use {
@@ -152,8 +90,8 @@ fun main(args: Array<String>) {
         }
     File(".circleci/").mkdir()
     listOf(
-        Triple(".travis.yml", travisYaml(), travisConfig(config.build())),
-        Triple(".circleci/config.yml", travisYaml(),
+        Triple(".travis.yml", defaultYaml(), travisConfig(config.build())),
+        Triple(".circleci/config.yml", defaultYaml(),
             circleConfig(config.build()))
     ).forEach { triple ->
         File(triple.first).outputStream().writer(Charsets.UTF_8).use {
