@@ -6,6 +6,9 @@ import org.yaml.snakeyaml.introspector.PropertyUtils
 import java.util.Collections
 import java.util.TreeSet
 
+/**
+ * Used in generating default Yaml.
+ */
 class DefaultPropertyUtils : PropertyUtils() {
     override fun createPropertySet(
         type: Class<out Any>?, bAccess: BeanAccess?
