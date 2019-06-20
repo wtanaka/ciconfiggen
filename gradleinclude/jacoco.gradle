@@ -1,0 +1,51 @@
+apply plugin: org.gradle.testing.jacoco.plugins.JacocoPlugin
+
+project.ext.jacocoCommonExcludeList = [
+]
+
+// https://stackoverflow.com/a/41342517/2034423
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 1.0
+            }
+        }
+    }
+
+    // https://issues.gradle.org/browse/GRADLE-2955?focusedCommentId=20131
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: project.ext.jacocoCommonExcludeList)
+        })
+    }
+}
+
+// https://docs.gradle.org/current/userguide/jacoco_plugin.html#sec:jacoco_report_configuration
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+    }
+
+    // https://issues.gradle.org/browse/GRADLE-2955?focusedCommentId=20131
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: project.ext.jacocoCommonExcludeList)
+        })
+    }
+}
+
+test {
+    // https://stackoverflow.com/a/27506104/2034423
+    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestCoverageVerification
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+    }
+    // https://stackoverflow.com/a/29101496/2034423
+    jacoco {
+        append = false
+    }
+}
