@@ -6,7 +6,6 @@ apply from: project(':gradleinclude').projectDir.path + '/proto.gradle'
 buildscript {
     // Serves as a global variable
     ext.kotlin_version = '1.3.40'
-    ext.jackson_version = '2.9.8'
     // Defines where we get our dependencies
     repositories {
         mavenCentral()
