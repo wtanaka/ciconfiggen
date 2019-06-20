@@ -8,16 +8,18 @@ buildscript {
     }
 }
 
+project.ext.protobuf_version = '3.7.1'
+
 apply plugin: com.google.protobuf.gradle.ProtobufPlugin
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:+'
+        artifact = "com.google.protobuf:protoc:$protobuf_version"
     }
 }
 
 dependencies {
-    compile 'com.google.protobuf:protobuf-java:3.7.1'
+    compile "com.google.protobuf:protobuf-java:$protobuf_version"
 }
 
 clean {
