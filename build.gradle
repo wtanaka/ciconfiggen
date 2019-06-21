@@ -6,6 +6,8 @@ apply from: project(':gradleinclude').projectDir.path + '/detekt.gradle'
 apply from: project(':gradleinclude').projectDir.path + '/ktlint.gradle'
 apply from: project(':gradleinclude').projectDir.path + '/proto.gradle'
 
+defaultTasks 'check', 'shadowJar'
+
 project.ext.jacocoCommonExcludeList.add(
         "com/wtanaka/ciconfiggen/ConfigProto*")
 
