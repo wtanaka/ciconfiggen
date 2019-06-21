@@ -3,6 +3,7 @@ apply from: project(':gradleinclude').projectDir.path + '/shadow.gradle'
 apply from: project(':gradleinclude').projectDir.path + '/kotlin.gradle'
 apply from: project(':gradleinclude').projectDir.path + '/jacoco.gradle'
 apply from: project(':gradleinclude').projectDir.path + '/detekt.gradle'
+apply from: project(':gradleinclude').projectDir.path + '/ktlint.gradle'
 apply from: project(':gradleinclude').projectDir.path + '/proto.gradle'
 
 project.ext.jacocoCommonExcludeList.add(
