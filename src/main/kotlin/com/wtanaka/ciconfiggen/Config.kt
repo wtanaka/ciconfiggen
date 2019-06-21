@@ -52,7 +52,8 @@ private fun Sequence<Environment>.suppress(suppression: Suppression) =
  * Flattens the Configuration into a sequence of Environment.
  */
 fun envMatrix(
-    config: Configuration, service: CiService
+    config: Configuration,
+    service: CiService
 ): Sequence<Environment> = config
     .envAxisList
     .asSequence()

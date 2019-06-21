@@ -11,7 +11,8 @@ import java.util.TreeSet
  */
 class DefaultPropertyUtils : PropertyUtils() {
     override fun createPropertySet(
-        type: Class<out Any>?, bAccess: BeanAccess?
+        type: Class<out Any>?,
+        bAccess: BeanAccess?
     ): MutableSet<Property> {
         val result = TreeSet<Property>(Collections.reverseOrder())
         result.addAll(super.createPropertySet(type, bAccess))

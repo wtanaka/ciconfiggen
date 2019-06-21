@@ -1,9 +1,11 @@
 package com.wtanaka.ciconfiggen
 
+import com.wtanaka.ciconfiggen.ConfigProto.Configuration
+
 /**
  * Returns TravisCI config in the form of a Map.
  */
-fun travisConfig(config: ConfigProto.Configuration): Map<String, Any> = mapOf(
+fun travisConfig(config: Configuration): Map<String, Any> = mapOf(
     "language" to "ruby",
     "cache" to mapOf(
         "directories" to listOf(
@@ -14,7 +16,7 @@ fun travisConfig(config: ConfigProto.Configuration): Map<String, Any> = mapOf(
     ),
     "rvm" to listOf("1.9.3"),
     "env" to envMatrix(config,
-        ConfigProto.Configuration.CiService.TRAVIS)
+        Configuration.CiService.TRAVIS)
         .map { it.shellString() }
         .toList(),
     "services" to "docker",
@@ -24,12 +26,11 @@ fun travisConfig(config: ConfigProto.Configuration): Map<String, Any> = mapOf(
 //            "    docker load < \$i; " +
 //            "  done; " +
 //            "fi; " +
-        "wget -O- bit.ly/ansibletest | sh -x; "
+        "wget -O- bit.ly/ansibletest | sh -x; ",
 //            + "mkdir -p \$HOME/.dockerimages; "
 //            + "for i in \$(docker images -q); do "
 //            + "  docker save \$i > \$HOME/.dockerimages/\$i.tar; "
 //            + "done"
-    ,
     "after_failure" to listOf(
         "cat role-tester-ansible-master/.kitchen.yml",
         "cat role-tester-ansible-master/.kitchen.local.yml",
