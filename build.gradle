@@ -43,7 +43,7 @@ jar {
 jacocoTestCoverageVerification.violationRules.rules.each {
     it.limits.each {
         if (it.minimum == 1.0) {
-            it.minimum = 0.28
+            it.minimum = 0.42
         }
     }
 }
