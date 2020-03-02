@@ -30,7 +30,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile 'org.yaml:snakeyaml:1.25'
+    compile 'org.yaml:snakeyaml:1.26'
     testCompile 'junit:junit:4.13'
 }
 
