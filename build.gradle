@@ -13,7 +13,7 @@ project.ext.jacocoCommonExcludeList.add(
 
 buildscript {
     // Serves as a global variable
-    ext.kotlin_version = '1.3.72'
+    ext.kotlin_version = '1.4.30'
     // Defines where we get our dependencies
     repositories {
         mavenCentral()
